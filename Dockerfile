@@ -1,11 +1,13 @@
 FROM codekoala/arch
 MAINTAINER Josh VanderLinden <codekoala@gmail.com>
 
-RUN pacman -Sy --noconfirm --needed redis
+RUN pacman -Sy --noconfirm --needed redis && \
+    sysctl vm.overcommit_memory=1 > /dev/null && \
+    chown -R redis:redis /var/lib/redis
+
 ADD redis.conf /etc/redis.conf
-ADD run /usr/bin/run
 
 EXPOSE 6379
 VOLUME ["/var/lib/redis"]
 
-CMD ["/usr/bin/run"]
+ENTRYPOINT ["/usr/bin/redis-server"]
